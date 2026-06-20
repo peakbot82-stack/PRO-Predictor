@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: '3.11'
       
-      - name: Install system dependencies
+      - name: Install all dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -36,12 +36,25 @@ jobs:
             cmake \
             libffi-dev \
             libssl-dev \
-            python3-pip
-      
-      - name: Install Python dependencies
-        run: |
+            python3-pip \
+            android-sdk \
+            android-sdk-build-tools-33 \
+            android-sdk-platform-tools
+          
+          # Instalar Buildozer
           pip install --upgrade pip
           pip install buildozer cython virtualenv
+          
+          # Configurar Android SDK
+          export ANDROID_HOME=/usr/lib/android-sdk
+          echo "ANDROID_HOME=/usr/lib/android-sdk" >> $GITHUB_ENV
+          echo "/usr/lib/android-sdk/tools/bin" >> $GITHUB_PATH
+          echo "/usr/lib/android-sdk/platform-tools" >> $GITHUB_PATH
+          echo "/usr/lib/android-sdk/build-tools/33.0.2" >> $GITHUB_PATH
+          
+          # Verificar instalación
+          which aidl || echo "aidl not found, checking alternatives..."
+          find /usr -name "aidl" 2>/dev/null || echo "aidl not found"
       
       - name: Build APK
         run: |
